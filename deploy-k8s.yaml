@@ -21,9 +21,11 @@ kind: Secret
 metadata:
   name: tasky-secrets
 type: Opaque
-stringData:
-  MONGODB_URI: $MONGODB_URI
-  SECRET_KEY: $SECRET_KEY
+# stringData:
+data:
+  # MONGODB_URI: $MONGODB_URI
+  MONGODB_URI: bW9uZ29kYjovL2FkbWluOm1vbmdvYWRtaW40MzIxQDEwLjEwLjAuOToyNzAxNw==
+  SECRET_KEY: c3VwZXItc2VjcmV0LWtleS0xMjM=
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -86,8 +88,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tasky-ingress
-  annotations:
-  kubernetes.io/ingress.class: "gce"
 spec:
   rules:
   - http:
