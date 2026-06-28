@@ -16,15 +16,14 @@ env:
   CLUSTER_ZONE: us-central1        
   MANIFEST_PATH: deploy-k8s.yaml 
 
+permissions:
+  contents: read
+  id-token: write # Required for Workload Identity Federation OIDC token exchange
+
 jobs:
   setup-and-deploy:
     name: Setup and Deploy
     runs-on: ubuntu-latest
-
-    # Required permissions for Workload Identity Federation
-    permissions:
-      contents: 'read'
-      id-token: 'write'
 
     steps:
     - name: Checkout Code
