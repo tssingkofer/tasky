@@ -1,9 +1,15 @@
 name: Deploy to GKE
 
 on:
-  push:
-    branches:
-      - main 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
 
 env:
   CLUSTER_NAME: dev-gke-cluster       
@@ -44,7 +50,3 @@ jobs:
     - name: Deploy to GKE
       run: |
         kubectl delete -f ${{ env.MANIFEST_PATH }}
-
-    - name: Verify Deployment
-      run: |
-        kubectl rollout status deployment/tasky-deployment

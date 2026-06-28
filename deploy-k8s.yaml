@@ -21,12 +21,9 @@ kind: Secret
 metadata:
   name: tasky-secrets
 type: Opaque
-data:
-  # base64 encoded string of: mongodb://admin:mongoadmin4321@10.10.0.9:27017
-  #10.10.0.9
-  MONGODB_URI: bW9uZ29kYjovL2FkbWluOm1vbmdvYWRtaW40MzIxQDEwLjEwLjAuOToyNzAxNw==
-  # base64 encoded string of: super-secret-key-123
-  SECRET_KEY: c3VwZXItc2VjcmV0LWtleS0xMjM=
+stringData:
+  MONGODB_URI: $MONGODB_URI
+  SECRET_KEY: $SECRET_KEY
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -52,7 +49,6 @@ spec:
         - containerPort: 8080 
         env:
         - name: MONGODB_URI
-          # value: mongodb://admin:mongoadmin4321@10.10.0.9:27017
           valueFrom:
             secretKeyRef:
               name: tasky-secrets
@@ -90,8 +86,7 @@ kind: Ingress
 metadata:
   name: tasky-ingress
   annotations:
-    # Specifies that GKE should use its native Application Load Balancer (ALB)
-    kubernetes.io/ingress.class: "gce"
+  kubernetes.io/ingress.class: "gce"
 spec:
   rules:
   - http:

@@ -1,9 +1,15 @@
 name: Deploy to GKE
 
 on:
-  push:
-    branches:
-      - main 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
 
 env:
   CLUSTER_NAME: dev-gke-cluster       
@@ -42,8 +48,11 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Deploy to GKE
+      env:
+        MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
-        kubectl apply -f ${{ env.MANIFEST_PATH }}
+        envsubst < ${{ env.MANIFEST_PATH }} | kubectl apply -f -
 
     - name: Verify Deployment
       run: |
