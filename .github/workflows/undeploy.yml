@@ -16,27 +16,24 @@ env:
   CLUSTER_ZONE: us-central1        
   MANIFEST_PATH: deploy-k8s.yaml 
 
+# Required permissions for Workload Identity Federation
+permissions:
+  contents: 'read'
+  id-token: 'write'
+    
 jobs:
   setup-and-deploy:
     name: Setup and Deploy
     runs-on: ubuntu-latest
 
-    # Required permissions for Workload Identity Federation
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # Authenticate to Google Cloud using Workload Identity Federation
-    - name: Authenticate to Google Cloud
-      id: auth
+    - name: "Authenticate to Google Cloud via OIDC"
       uses: google-github-actions/auth@v2
       with:
-        token_format: 'access_token'
-        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
     # Get GKE credentials so kubectl can communicate with the cluster
@@ -47,6 +44,6 @@ jobs:
         location: ${{ env.CLUSTER_ZONE }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Deploy to GKE
+    - name: Delete from GKE
       run: |
         kubectl delete -f ${{ env.MANIFEST_PATH }}
