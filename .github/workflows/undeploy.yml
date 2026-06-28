@@ -1,4 +1,4 @@
-name: Deploy to GKE
+name: Delete from GKE
 
 on:
   workflow_dispatch:
