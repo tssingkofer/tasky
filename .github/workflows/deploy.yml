@@ -30,12 +30,9 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # Authenticate to Google Cloud using Workload Identity Federation
-    - name: Authenticate to Google Cloud
-      id: auth
+    - name: "Authenticate to Google Cloud via OIDC"
       uses: google-github-actions/auth@v2
       with:
-        token_format: 'access_token'
         workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
