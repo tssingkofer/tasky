@@ -44,7 +44,8 @@ spec:
       serviceAccountName: tasky-sa
       containers:
       - name: tasky
-        image: tssingkofer/tasky:latest
+        #image: tssingkofer/tasky:latest
+        image: ghcr.io/tssingkofer/tasky:latest
         ports:
         - containerPort: 8080 
         env:
