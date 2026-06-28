@@ -1,0 +1,50 @@
+name: Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main 
+
+env:
+  CLUSTER_NAME: dev-gke-cluster       
+  CLUSTER_ZONE: us-central1        
+  MANIFEST_PATH: deploy-k8s.yaml 
+
+jobs:
+  setup-and-deploy:
+    name: Setup and Deploy
+    runs-on: ubuntu-latest
+
+    # Required permissions for Workload Identity Federation
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Authenticate to Google Cloud using Workload Identity Federation
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+    # Get GKE credentials so kubectl can communicate with the cluster
+    - name: Set up GKE Credentials
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: ${{ env.CLUSTER_NAME }}
+        location: ${{ env.CLUSTER_ZONE }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Deploy to GKE
+      run: |
+        kubectl apply -f ${{ env.MANIFEST_PATH }}
+
+    - name: Verify Deployment
+      run: |
+        kubectl rollout status deployment/tasky-deployment
